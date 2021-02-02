@@ -1,0 +1,72 @@
+scp_program -> proc_find_lenght (*
+	-> rrel_params: ... (*
+
+		-> rrel_1: rrel_in: _begin_vertex;;
+
+		-> rrel_2: rrel_in: _end_vertex;;
+
+		-> rrel_3: rrel_out: _temp_lenght;;
+	*);;
+
+	-> rrel_operators: ... (*
+
+//находим все множества
+		-> rrel_init: ..get_all_nodes (*
+			<- searchSetStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
+			-> rrel_2: rrel_assign: rrel_scp_var: rrel_common: _neccesary_arc;;
+			-> rrel_3: rrel_fixed: rrel_scp_var: _end_vertex;;
+			-> rrel_4: rrel_assign: rrel_scp_var: rrel_common: _arc2;;
+			-> rrel_5: rrel_assign: rrel_scp_var: _weight;;
+			-> rrel_set_5: rrel_assign: rrel_scp_var: _all_nodes;;
+			=> nrel_then: ..get_node;;
+			=> nrel_else: ..return;;
+		*);;
+
+//берем ноду
+		-> ..get_node (*
+			<- searchElStr3;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _all_nodes;;
+			-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _deleted_arc;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _weight;;
+			=> nrel_then: ..delete_arc;;
+			=> nrel_else: ..return;;
+		*);;
+
+//удаляем ее из множества
+		-> ..delete_arc (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _deleted_arc;;
+			=> nrel_goto: ..if_weight;;
+		*);;
+
+//если это вес. то берем его, а если нет, топродалжаем перебирать ноды
+		-> ..if_weight (*
+			<- searchElStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _weight;;
+			-> rrel_2: rrel_assign: rrel_const: rrel_common: rrel_scp_var: _arc1;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _weight_value;;
+			-> rrel_4: rrel_assign: rrel_pos: rrel_scp_var: _arc2;;
+			-> rrel_5: rrel_fixed: rrel_scp_const: nrel_system_identifier;;
+			=> nrel_then: ..assign_new_lenght;;
+			=> nrel_else: ..get_node;;
+		*);;
+//записываем значени веса
+		-> ..assign_new_lenght (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _temp_lenght;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _weight_value;;
+			=> nrel_goto: ..delete_nodes;;
+		*);;
+//удаляем все ноды, усе
+		-> ..delete_nodes (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _all_nodes;;
+			=> nrel_goto: ..return;;
+		*);;
+
+		-> ..return (*
+			<- return;;
+		*);;
+	*);;
+*);;

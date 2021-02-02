@@ -1,0 +1,18 @@
+undirected_graph -> graph3 (*
+	-> rrel_node: V1_g3;;
+	-> rrel_node: V2_g3;;
+	-> rrel_node: V3_g3;;
+	-> rrel_node: V4_g3;;
+	-> rrel_node: V5_g3;;
+
+	-> rrel_edge: (V1_g3 => V2_g3) (* <= 5;; *);;
+	-> rrel_edge: (V2_g3 => V1_g3) (* <= 5;; *);;
+	-> rrel_edge: (V2_g3 => V3_g3) (* <= 5;; *);;
+	-> rrel_edge: (V3_g3 => V2_g3) (* <= 5;; *);;
+	-> rrel_edge: (V3_g3 => V4_g3) (* <= 5;; *);;
+	-> rrel_edge: (V4_g3 => V3_g3) (* <= 5;; *);;
+	-> rrel_edge: (V4_g3 => V5_g3) (* <= 5;; *);;
+	-> rrel_edge: (V5_g3 => V4_g3) (* <= 5;; *);;
+	-> rrel_edge: (V5_g3 => V1_g3) (* <= 5;; *);;
+	-> rrel_edge: (V1_g3 => V5_g3) (* <= 5;; *);;
+*);;

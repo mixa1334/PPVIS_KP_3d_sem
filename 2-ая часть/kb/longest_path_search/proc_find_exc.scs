@@ -1,0 +1,130 @@
+scp_program -> proc_find_exc (*
+	-> rrel_params: ... (*
+
+		-> rrel_1: rrel_in: _graph;;
+
+		-> rrel_2: rrel_in: _begin_vertex;;
+
+		-> rrel_3: rrel_out: _exc;;
+	*);;
+
+	-> rrel_operators: ... (*
+
+		-> rrel_init: ..initialize (*
+					<- varAssign;;
+					-> rrel_1: rrel_assign: rrel_scp_var: _exc;;
+					-> rrel_2: rrel_fixed: rrel_scp_const: [0];;
+					=> nrel_goto: ..create_set_other_vertices;;
+				*);;
+//создаем множество вершин
+		-> ..create_set_other_vertices (*
+			<- searchSetStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+			-> rrel_2: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc_main_20_1;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _main_20_vert_of_graph;;
+			-> rrel_4: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc_main_20_2;;
+			-> rrel_5: rrel_fixed: rrel_scp_const: rrel_node;;
+			-> rrel_set_3: rrel_assign: rrel_scp_var: _other_vertices;;
+			=> nrel_then: ..initialize_temp;;
+			=> nrel_else: ..return;;
+		*);;
+
+//создаем временную переменную для эксцентриситета
+
+		-> ..initialize_temp (*
+				<- varAssign;;
+				-> rrel_1: rrel_assign: rrel_scp_var: _temp;;
+				-> rrel_2: rrel_fixed: rrel_scp_const: [0];;
+				=> nrel_goto: ..get_begin_vertex;;
+			*);;
+
+//берем начальную вершину и потом ее из этого множества удаляем
+//(мы сейчас будем искать кротчайшие пути от вершину _begin до всех остальных вершин, а потом выбирать наибольшее, это и будет эксцентриситет)
+		-> ..get_begin_vertex (*
+			<- searchElStr3;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _other_vertices;;
+			-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _first_vertex;;
+			-> rrel_3: rrel_fixed: rrel_scp_var: _begin_vertex;;
+			=> nrel_then: ..delete_begin_arc;;
+			=> nrel_else: ..get_other_vertex_from_set;;
+		*);;
+//удаляем начальную вершину из множества, чтобы не искать расстояние from _begin to _begin)
+		-> ..delete_begin_arc (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _first_vertex;;
+			=> nrel_goto: ..get_other_vertex_from_set;;
+		*);;
+
+
+//берем вершину Y ()если их не осталось то заканчиваем все это вот((((((
+		-> ..get_other_vertex_from_set (*
+			<- searchElStr3;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _other_vertices;;
+			-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _erase_other_vert;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _vertx;;
+			=> nrel_then: ..delete_arc;;
+			=> nrel_else: ..erase_other_vertices;;
+		*);;
+
+//удаляем вершину Y из множетсва
+		-> ..delete_arc (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _erase_other_vert;;
+			=> nrel_goto: ..call_find_path;;
+		*);;
+
+//находим кротчайший путь от X в Y
+		-> ..call_find_path (*
+			<- call;;
+			-> rrel_1: rrel_fixed: rrel_scp_const: proc_call_find_min_path;;
+			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+
+				-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+
+				-> rrel_2: rrel_fixed: rrel_scp_var: _begin_vertex;;
+
+				-> rrel_3: rrel_fixed: rrel_scp_var: _vertx;;
+
+				-> rrel_4: rrel_assign: rrel_scp_var: _temp;;
+
+			*);;
+			-> rrel_3: rrel_assign: rrel_scp_var: _descr_main_20;;
+			=> nrel_goto: ..wait_find_path;;
+		*);;
+
+
+		-> ..wait_find_path (*
+			<- waitReturn;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _descr_main_20;;
+			=> nrel_goto: ..if_greater;;
+		*);;
+
+//если путь больше эксцентриситета, то меняем эксцентриситет на полученное значение,
+//если нет, то переходим к следующей вершине
+		-> ..if_greater (*
+			<- ifGr;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _temp;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _exc;;
+			=> nrel_then: ..assign_new_max;;
+			=> nrel_else: ..get_other_vertex_from_set;;
+		*);;
+//меняем значение на новое
+		-> ..assign_new_max (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _exc;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _temp;;
+			=> nrel_goto: ..get_other_vertex_from_set;;
+		*);;
+//удаляем множество вершин и возвращаем значение эксцентриситета
+		-> ..erase_other_vertices (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: rrel_erase: _other_vertices;;
+			=> nrel_goto: ..return;;
+		*);;
+
+
+		-> ..return (*
+			<- return;;
+		*);;
+	*);;
+*);;

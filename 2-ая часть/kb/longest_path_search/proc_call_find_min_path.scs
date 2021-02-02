@@ -1,0 +1,62 @@
+scp_program -> proc_call_find_min_path (*
+	-> rrel_params: ... (*
+
+		-> rrel_1: rrel_in: _graph;;
+
+		-> rrel_2: rrel_in: _begin_vertex;;
+
+		-> rrel_3: rrel_in: _end_vertex;;
+
+		-> rrel_4: rrel_out: _min_path;;
+
+	*);;
+
+	-> rrel_operators: ... (*
+//создаем множество пройденных вершин
+		-> rrel_init: ..create_set_checked_vertices (*
+		        <-genEl;;
+		        -> rrel_1: rrel_assign: rrel_node: rrel_scp_var: _checked_vertices;;
+
+		        => nrel_goto: ..call_find_min_path;;
+		     *);;
+
+//ищем кротчайший путь от X в Y
+		-> ..call_find_min_path (*
+			<- call;;
+			-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_min_path;;
+			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+
+				-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+
+				-> rrel_2: rrel_fixed: rrel_scp_var: _begin_vertex;;
+
+				-> rrel_3: rrel_fixed: rrel_scp_var: _end_vertex;;
+
+				-> rrel_4: rrel_fixed: rrel_scp_var: _checked_vertices;;
+
+				-> rrel_5: rrel_assign: rrel_scp_var: _min_path;;
+
+			*);;
+			-> rrel_3: rrel_assign: rrel_scp_var: _descr228;;
+			=> nrel_goto: ..wait_find_min_path;;
+		*);;
+
+		-> ..wait_find_min_path (*
+			<- waitReturn;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _descr228;;
+			=> nrel_goto: ..erase_checked_vertices;;
+		*);;
+//удаляем множество пройденных вершин
+		-> ..erase_checked_vertices (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: rrel_erase: _checked_vertices;;
+			=> nrel_goto: ..return;;
+		*);;
+
+
+
+		-> ..return (*
+			<- return;;
+		*);;
+	*);;
+*);;

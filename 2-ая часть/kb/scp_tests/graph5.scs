@@ -1,0 +1,31 @@
+undirected_graph -> graph5 (*
+	-> rrel_node: V1_g5;;
+	-> rrel_node: V2_g5;;
+	-> rrel_node: V3_g5;;
+	-> rrel_node: V4_g5;;
+	-> rrel_node: V5_g5;;
+	-> rrel_node: V6_g5;;
+	-> rrel_node: V7_g5;;
+	-> rrel_node: V8_g5;;
+
+	-> rrel_edge: (V1_g5 => V2_g5) (* <= 2;; *);;
+	-> rrel_edge: (V2_g5 => V1_g5) (* <= 2;; *);;
+	-> rrel_edge: (V1_g5 => V3_g5) (* <= 1;; *);;
+	-> rrel_edge: (V3_g5 => V1_g5) (* <= 1;; *);;
+	-> rrel_edge: (V1_g5 => V6_g5) (* <= 3;; *);;
+	-> rrel_edge: (V6_g5 => V1_g5) (* <= 3;; *);;
+	-> rrel_edge: (V2_g5 => V3_g5) (* <= 4;; *);;
+	-> rrel_edge: (V3_g5 => V2_g5) (* <= 4;; *);;
+	-> rrel_edge: (V3_g5 => V7_g5) (* <= 1;; *);;
+	-> rrel_edge: (V7_g5 => V3_g5) (* <= 1;; *);;
+	-> rrel_edge: (V3_g5 => V8_g5) (* <= 6;; *);;
+	-> rrel_edge: (V8_g5 => V3_g5) (* <= 6;; *);;
+	-> rrel_edge: (V7_g5 => V8_g5) (* <= 3;; *);;
+	-> rrel_edge: (V8_g5 => V7_g5) (* <= 3;; *);;
+	-> rrel_edge: (V6_g5 => V5_g5) (* <= 1;; *);;
+	-> rrel_edge: (V5_g5 => V6_g5) (* <= 1;; *);;
+	-> rrel_edge: (V6_g5 => V4_g5) (* <= 5;; *);;
+	-> rrel_edge: (V4_g5 => V6_g5) (* <= 5;; *);;
+	-> rrel_edge: (V4_g5 => V5_g5) (* <= 6;; *);;
+	-> rrel_edge: (V5_g5 => V4_g5) (* <= 6;; *);;
+*);;

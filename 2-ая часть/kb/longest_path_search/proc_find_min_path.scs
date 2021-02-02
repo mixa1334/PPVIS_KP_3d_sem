@@ -1,0 +1,205 @@
+scp_program -> proc_find_min_path (*
+	-> rrel_params: ... (*
+
+		-> rrel_1: rrel_in: _graph;;
+
+		-> rrel_2: rrel_in: _begin_vertex;;
+
+		-> rrel_3: rrel_in: _end_vertex;;
+
+		-> rrel_4: rrel_in: _checked_vertices;;
+
+		-> rrel_5: rrel_out: _min_path;;
+	*);;
+
+	-> rrel_operators: ... (*
+
+		-> rrel_init: ..initialize (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _min_path;;
+			-> rrel_2: rrel_fixed: rrel_scp_const: [10000];;
+			=> nrel_goto: ..initialize_temp_sum;;
+		*);;
+//создаем временное значение
+		-> ..initialize_temp_sum (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _temp_sum;;
+			-> rrel_2: rrel_fixed: rrel_scp_const: [0];;
+			=> nrel_goto: ..initialize_temp_lenght;;
+		*);;
+//еще одноо
+		-> ..initialize_temp_lenght (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _temp_lenght;;
+			-> rrel_2: rrel_fixed: rrel_scp_const: [0];;
+			=> nrel_goto: ..initialize_temp_recur_lenght;;
+		*);;
+//и еще одно
+		-> ..initialize_temp_recur_lenght (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _temp_recur_lenght;;
+			-> rrel_2: rrel_fixed: rrel_scp_const: [0];;
+			=> nrel_goto: ..get_all_adjacent_vertices;;
+		*);;
+//создаем множество вершин, с которыми связана начальная вершина
+		-> ..get_all_adjacent_vertices (*
+			<- searchSetStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
+			-> rrel_2: rrel_assign: rrel_common: rrel_scp_var: _arc_main_last_1;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _adjacent_vertex;;
+			-> rrel_4: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc_main_last_2;;
+			-> rrel_5: rrel_fixed: rrel_scp_var: _graph;;
+			-> rrel_set_3: rrel_assign: rrel_scp_var: _all_adjacent_vertices;;
+			=> nrel_then: ..add_to_checked_vertices;;
+			=> nrel_else: ..return;;
+		*);;
+//заносим в множетсво пройденных вершин первую вершину (мы сейчас в ней)
+		-> ..add_to_checked_vertices (*
+						 <-genElStr3;;
+						 -> rrel_1: rrel_fixed: rrel_scp_var: _checked_vertices;;
+						 -> rrel_2: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc_checked_vertices;;
+						 -> rrel_3: rrel_fixed: rrel_scp_var: _begin_vertex;;
+						 => nrel_goto: ..get_adjacent_vertex;;
+						*);;
+
+//получаем смежную вершину, если таких няма(то удаляем множество смежных вершин)
+		-> ..get_adjacent_vertex (*
+					<- searchElStr3;;
+					-> rrel_1: rrel_fixed: rrel_scp_var: _all_adjacent_vertices;;
+    			-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc_adjacent_vertex;;
+					-> rrel_3: rrel_assign: rrel_scp_var: _adjacent_vertex;;
+					=> nrel_then: ..erase_adjacent_vertex;;
+					=> nrel_else: ..erase_all_adjacent_vertices;;
+			*);;
+//удаляем смежную вершину из множества смежных
+		-> ..erase_adjacent_vertex (*
+					<- eraseEl;;
+    			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _arc_adjacent_vertex;;
+					=> nrel_goto: ..if_vertex_checked;;
+			*);;
+//если вершина находится в множестве пройденных, то берем next) вершину
+			-> ..if_vertex_checked (*
+				<- searchElStr3;;
+				-> rrel_1: rrel_fixed: rrel_scp_var: _checked_vertices;;
+				-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _arc_between_checked_vertexes_and_adjacent_vertex;;
+				-> rrel_3: rrel_fixed: rrel_scp_var: _adjacent_vertex;;
+				=> nrel_then: ..get_adjacent_vertex;;
+				=> nrel_else: ..call_find_lenght;;
+			*);;
+//вычисляем длинну между вершиной в которой мы (begin) и смежной вершиной _adjacent_vertex
+			-> ..call_find_lenght (*
+				<- call;;
+				-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_lenght;;
+				-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+
+					-> rrel_1: rrel_fixed: rrel_scp_var: _begin_vertex;;
+
+					-> rrel_2: rrel_fixed: rrel_scp_var: _adjacent_vertex;;
+
+					-> rrel_3: rrel_assign: rrel_scp_var: _temp_lenght;;
+
+				*);;
+				-> rrel_3: rrel_assign: rrel_scp_var: _descr_last_main;;
+				=> nrel_goto: ..wait_find_lenght;;
+			*);;
+
+
+			-> ..wait_find_lenght (*
+				<- waitReturn;;
+				-> rrel_1: rrel_fixed: rrel_scp_var: _descr_last_main;;
+				=> nrel_goto: ..if_equals;;
+			*);;
+
+//если наша смежная вершина равна конечной (мы нашли нужный путь), если нет, то рекурсией вызываем еще раз эту же функцию
+			-> ..if_equals (*
+				<- ifCoin;;
+				-> rrel_1: rrel_fixed: rrel_scp_var: _adjacent_vertex;;
+				-> rrel_2: rrel_fixed: rrel_scp_var: _end_vertex;;
+				=> nrel_then: ..if_greater;;
+				=> nrel_else: ..call_recur;;
+			*);;
+
+//рекурсивный вызов, но на этот раз начальная вершина будет смежной с нашей начальной +передаем пройденные вершины (наша начльаная где мы, чтобы по кругу не ходить)
+			-> ..call_recur (*
+				<- call;;
+				-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_min_path;;
+				-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+					// Имя графа
+					// Начальная вершина
+
+					-> rrel_1: rrel_in: _graph;;
+
+					-> rrel_2: rrel_fixed: rrel_scp_var: _adjacent_vertex;;
+
+					-> rrel_3: rrel_fixed: rrel_scp_var: _end_vertex;;
+
+					-> rrel_4: rrel_fixed: rrel_scp_var: _checked_vertices;;
+
+					-> rrel_5: rrel_assign: rrel_scp_var: _temp_recur_lenght;;
+
+				*);;
+				-> rrel_3: rrel_assign: rrel_scp_var: _descr_last_main_2;;
+				=> nrel_goto: ..wait_reruc;;
+			*);;
+
+
+			-> ..wait_reruc (*
+				<- waitReturn;;
+				-> rrel_1: rrel_fixed: rrel_scp_var: _descr_last_main_2;;
+				=> nrel_goto: ..sum;;
+			*);;
+
+//суммируем  длину от начаьлной до смежно вершины и длину от смежной до конечно вершины (через N кол-во рекурсий мы туда попадем)
+			-> ..sum (*
+				<- contAdd;;
+				-> rrel_1: rrel_assign: rrel_scp_var: _temp_sum;;
+				-> rrel_2: rrel_fixed: rrel_scp_var: _temp_lenght;;
+				-> rrel_3: rrel_fixed: rrel_scp_var: _temp_recur_lenght;;
+				=> nrel_goto: ..assign_new_lenghhhj;;
+			*);;
+
+			-> ..assign_new_lenghhhj (*
+				<- varAssign;;
+				-> rrel_1: rrel_assign: rrel_scp_var: _temp_lenght;;
+				-> rrel_2: rrel_fixed: rrel_scp_var: _temp_sum;;
+				=> nrel_goto: ..if_greater;;
+			*);;
+
+//елси минимальный путь больше того, что мы нашли, то меняем значение и переходим к следующей смежной вершине и как только смежные вершины закончаться. то мы перебрали все пути
+			-> ..if_greater (*
+				<- ifGr;;
+				-> rrel_1: rrel_fixed: rrel_scp_var: _min_path;;
+				-> rrel_2: rrel_fixed: rrel_scp_var: _temp_lenght;;
+				=> nrel_then: ..assign_new_min;;
+				=> nrel_else: ..get_adjacent_vertex;;
+			*);;
+
+			-> ..assign_new_min (*
+				<- varAssign;;
+				-> rrel_1: rrel_assign: rrel_scp_var: _min_path;;
+				-> rrel_2: rrel_fixed: rrel_scp_var: _temp_lenght;;
+				=> nrel_goto: ..get_adjacent_vertex;;
+			*);;
+
+
+
+///////////////////////////////////////////////////////////////////
+
+-> ..erase_all_adjacent_vertices (*
+	<- eraseEl;;
+	-> rrel_1: rrel_fixed: rrel_scp_var: rrel_erase: _all_adjacent_vertices;;
+	=> nrel_goto: ..delete_begin_from_checked_vertices;;
+*);;
+
+
+-> ..delete_begin_from_checked_vertices (*
+	<- eraseEl;;
+	-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _arc_checked_vertices;;
+	=> nrel_goto: ..return;;
+*);;
+
+		-> ..return (*
+			<- return;;
+		*);;
+	*);;
+*);;

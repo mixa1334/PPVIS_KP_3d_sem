@@ -1,0 +1,237 @@
+scp_program -> proc_main (*
+	-> rrel_params: ... (*
+
+		-> rrel_1: rrel_in: _graph;;
+
+		-> rrel_2: rrel_in: _test_number;;
+
+	*);;
+
+	-> rrel_operators: ... (*
+
+		-> rrel_init: ..start (*
+			<- print;;
+			-> rrel_1: rrel_fixed: rrel_scp_const: [Тест ];;
+			=> nrel_goto: ..print_test_numbers;;
+		*);;
+
+		-> ..print_test_numbers (*
+			<- printNl;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _test_number;;
+			=> nrel_goto: ..initialize_d;;
+		*);;
+
+//создаем диаметр
+		-> ..initialize_d (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _d;;
+			-> rrel_2: rrel_fixed: rrel_scp_const: [0];;
+			=> nrel_goto: ..initialize_exc;;
+		*);;
+//создаем эксцентриситет
+		-> ..initialize_exc (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _exc;;
+			-> rrel_2: rrel_fixed: rrel_scp_const: [0];;
+			=> nrel_goto: ..create_set_pefir_vertices;;
+		*);;
+
+
+		-> rrel_init: ..create_set_pefir_vertices (*
+		        <-genEl;;
+		        -> rrel_1: rrel_assign: rrel_node: rrel_scp_var: _pefir_vertices;;
+
+		        => nrel_goto: ..create_set_all_vertices;;
+		     *);;
+
+//берем вссе вершины графа
+		-> ..create_set_all_vertices (*
+			<- searchSetStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+			-> rrel_2: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc_all_vertices_1;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _vertex_of_graph;;
+			-> rrel_4: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc_all_vertices_2;;
+			-> rrel_5: rrel_fixed: rrel_scp_const: rrel_node;;
+			-> rrel_set_3: rrel_assign: rrel_scp_var: _all_vertices;;
+			=> nrel_then: ..get_vertex_from_set;;
+			=> nrel_else: ..return;;
+		*);;
+//из всего множетсва вершин берем одну(когда они закончаться, то удалем множество, ибо все вершины перебрали)
+		-> ..get_vertex_from_set (*
+			<- searchElStr3;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _all_vertices;;
+			-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _erase_arc;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _vert;;
+			=> nrel_then: ..delete_arc;;
+			=> nrel_else: ..print_all_perif_vertxs;;///////////////////////////тата вывод периферийных надо
+		*);;
+
+//удаляем ее из этого множетсва
+		-> ..delete_arc (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _erase_arc;;
+			=> nrel_goto: ..call_find_exc;;
+		*);;
+
+//считаем эксцентриситет для этой вершины
+		-> ..call_find_exc (*
+			<- call;;
+			-> rrel_1: rrel_fixed: rrel_scp_const: proc_find_exc;;
+			-> rrel_2: rrel_fixed: rrel_scp_const: ... (*
+
+				-> rrel_1: rrel_fixed: rrel_scp_var: _graph;;
+
+				-> rrel_2: rrel_fixed: rrel_scp_var: _vert;;
+
+				-> rrel_3: rrel_assign: rrel_scp_var: _exc;;
+			*);;
+			-> rrel_3: rrel_assign: rrel_scp_var: _descr_main_10_1;;
+			=> nrel_goto: ..wait_find_exc;;
+		*);;
+
+
+		-> ..wait_find_exc (*
+			<- waitReturn;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _descr_main_10_1;;
+			=> nrel_goto: ..if_equals;;
+		*);;
+
+
+		-> ..if_equals (*
+			<- ifEq;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _exc;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _d;;
+			=> nrel_then: ..add_to_perif;;
+			=> nrel_else: ..if_greater;;
+		*);;
+
+//сравниваем эксцентриситет с диаметров
+		-> ..if_greater (*
+			<- ifGr;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _exc;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _d;;
+			=> nrel_then: ..assign_new_max;;
+			=> nrel_else: ..get_vertex_from_set;;
+		*);;
+//если эксцентриситет больше, то записываем его в диаметр
+//после переходим к другой вершине (функция выше)
+		-> ..assign_new_max (*
+			<- varAssign;;
+			-> rrel_1: rrel_assign: rrel_scp_var: _d;;
+			-> rrel_2: rrel_fixed: rrel_scp_var: _exc;;
+			=> nrel_goto: ..get_old_perif_vert;;
+		*);;
+
+
+//////////////////////////////////////////////////////////////
+
+       -> ..add_to_perif (*
+				 <-genElStr3;;
+				 -> rrel_1: rrel_fixed: rrel_scp_var: _pefir_vertices;;
+				 -> rrel_2: rrel_assign: rrel_pos_const_perm: rrel_scp_var: _arc_perif_v;;
+				 -> rrel_3: rrel_fixed: rrel_scp_var: _vert;;
+				 => nrel_goto: ..get_vertex_from_set;;
+				*);;
+
+
+				-> ..get_old_perif_vert (*
+					<- searchElStr3;;
+					-> rrel_1: rrel_fixed: rrel_scp_var: _pefir_vertices;;
+					-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _erase_old_perif_arc;;
+					-> rrel_3: rrel_assign: rrel_scp_var: _old_perif_vert;;
+					=> nrel_then: ..delete_old_perif_vert;;
+					=> nrel_else: ..add_to_perif;;
+				*);;
+
+				-> ..delete_old_perif_vert (*
+					<- eraseEl;;
+					-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _erase_old_perif_arc;;
+					=> nrel_goto: ..get_old_perif_vert;;
+				*);;
+
+///////////////////////////////////
+
+
+-> ..print_all_perif_vertxs (*
+		<-printNl;;
+		-> rrel_1: rrel_fixed:  rrel_scp_const: [-- Periferal vertexs --];;
+		=>nrel_goto: ..get_print_perif_vert;;
+	*);;
+
+
+
+-> ..get_print_perif_vert (*
+	<- searchElStr3;;
+	-> rrel_1: rrel_fixed: rrel_scp_var: _pefir_vertices;;
+	-> rrel_2: rrel_assign: rrel_scp_var: rrel_pos_const_perm: _need_to_print_perif_vert_arc;;
+	-> rrel_3: rrel_assign: rrel_scp_var: _need_to_print_perif_vert;;
+	=> nrel_then: ..delete_print_perif_vert_from_set;;
+	=> nrel_else: ..erase_all_vertice;;
+*);;
+
+-> ..delete_print_perif_vert_from_set (*
+	<- eraseEl;;
+	-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _need_to_print_perif_vert_arc;;
+	=> nrel_goto: ..get_idtf_of_perif_vert;;
+*);;
+
+-> ..get_idtf_of_perif_vert (*
+		 <- searchElStr5;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: _need_to_print_perif_vert;;
+			-> rrel_2: rrel_assign: rrel_const: rrel_common: rrel_scp_var: _arc_of_print_perif_vert;;
+			-> rrel_3: rrel_assign: rrel_scp_var: _print_value;;
+			-> rrel_4: rrel_assign: rrel_pos: rrel_scp_var: _arc_btw;;
+			-> rrel_5: rrel_fixed: rrel_scp_const: nrel_system_identifier;;
+			=> nrel_then: ..print_perif_vert;;
+			=> nrel_else: ..get_print_perif_vert;;
+		*);;
+
+-> ..print_perif_vert (*
+		<-printNl;;
+		-> rrel_1: rrel_fixed:  rrel_scp_var: _print_value;;
+		=>nrel_goto: ..get_print_perif_vert;;
+	*);;
+
+
+
+
+///////////////////////////////////////////////////////////
+//удаляем множетсво всех вершин
+		-> ..erase_all_vertice (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: rrel_erase: _all_vertices;;
+			=> nrel_goto: ..erase_perif_vert;;
+		*);;
+
+
+		-> ..erase_perif_vert (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_scp_var: rrel_erase: _pefir_vertices;;
+			=> nrel_goto: ..del_d;;
+		*);;
+
+
+		-> ..del_d (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _d;;
+			=> nrel_goto: ..del_exc;;
+		*);;
+
+		-> ..del_exc (*
+			<- eraseEl;;
+			-> rrel_1: rrel_fixed: rrel_erase: rrel_scp_var: _exc;;
+			=> nrel_goto: ..printENDD;;
+		*);;
+
+		-> ..printENDD (*
+				<-printNl;;
+				-> rrel_1: rrel_fixed:  rrel_scp_const: [---------------------];;
+				=>nrel_goto: ..return;;
+			*);;
+
+
+		-> ..return (*
+			<- return;;
+		*);;
+	*);;
+*);;
